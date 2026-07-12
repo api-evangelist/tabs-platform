@@ -1,0 +1,170 @@
+aid: tabs-platform
+url: https://raw.githubusercontent.com/api-evangelist/tabs-platform/refs/heads/main/apis.yml
+name: Tabs
+kind: company
+description: >-
+  Tabs (tabs.inc) is an AI-native revenue automation platform for B2B companies
+  that unifies billing, collections, ASC 606 revenue recognition, and reporting
+  on top of a contract-driven data model. Tabs ingests executed contracts, uses
+  AI to extract commercial terms, automatically generates invoices, schedules
+  ASC 606-compliant revenue, drives collections, and produces real-time ARR,
+  cash, and AR reporting. The public Tabs Platform REST API
+  (https://api.tabsplatform.com, documented at docs.tabsplatform.com) exposes
+  the core data model - customers, contracts, items, revenue categories,
+  obligations, invoices, payments, usage events, and performance obligations -
+  so contract, billing, and revenue data can flow into the rest of the finance
+  stack (ERP, CRM, payment, and tax systems). Supports subscription,
+  usage-based, metered, and hybrid billing models. Authenticated with an API
+  key passed in the Authorization header.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Revenue Recognition
+- ASC 606
+- Billing
+- B2B Payments
+- Accounts Receivable
+- Invoicing
+- Collections
+- Usage-Based Billing
+- Subscriptions
+- Contracts
+- Finance
+- Revenue Automation
+created: '2026-07-11'
+modified: '2026-07-11'
+specificationVersion: '0.19'
+apis:
+- aid: tabs-platform:tabs-platform-contracts-api
+  name: Tabs Contracts API
+  tags:
+  - Contracts
+  - Obligations
+  - Billing Terms
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.tabsplatform.com/docs/contracts
+  baseURL: https://api.tabsplatform.com
+  properties:
+  - url: https://docs.tabsplatform.com/docs/contracts
+    type: Documentation
+  - url: https://docs.tabsplatform.com/docs/obligations
+    type: APIReference
+  - url: openapi/tabs-platform-openapi.yml
+    type: OpenAPI
+  description: >-
+    Create, list, get, and update customer contracts, upload executed contract
+    documents for AI ingestion, and manage the obligations and billing terms
+    that drive invoicing and revenue recognition. Endpoint path shapes are
+    modeled - see review.yml.
+- aid: tabs-platform:tabs-platform-invoices-api
+  name: Tabs Invoices API
+  tags:
+  - Invoicing
+  - Accounts Receivable
+  - Billing
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.tabsplatform.com/docs/invoices
+  baseURL: https://api.tabsplatform.com
+  properties:
+  - url: https://docs.tabsplatform.com/docs/invoices
+    type: Documentation
+  - url: openapi/tabs-platform-openapi.yml
+    type: OpenAPI
+  description: >-
+    List, get, and update invoices and their line items, download invoice PDFs,
+    and perform lifecycle actions (finalize, send, void, mark paid). Invoices
+    are itemized requests for payment derived from contract obligations.
+    Endpoint path shapes are modeled - see review.yml.
+- aid: tabs-platform:tabs-platform-revenue-recognition-api
+  name: Tabs Revenue Recognition API
+  tags:
+  - Revenue Recognition
+  - ASC 606
+  - ARR
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.tabsplatform.com/docs/the-tabs-data-model
+  baseURL: https://api.tabsplatform.com
+  properties:
+  - url: https://docs.tabsplatform.com/docs/the-tabs-data-model
+    type: Documentation
+  - url: openapi/tabs-platform-openapi.yml
+    type: OpenAPI
+  description: >-
+    List recognized revenue, search ASC 606 performance obligations, upsert a
+    recognized-revenue schedule, and pull the ARR and cash-forecast reports.
+    Invoices flow directly into ASC 606-compliant revenue recognition without
+    manual spreadsheets. Endpoint path shapes are modeled - see review.yml.
+- aid: tabs-platform:tabs-platform-payments-api
+  name: Tabs Payments API
+  tags:
+  - Payments
+  - B2B Payments
+  - Collections
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.tabsplatform.com/docs/payments
+  baseURL: https://api.tabsplatform.com
+  properties:
+  - url: https://docs.tabsplatform.com/docs/payments
+    type: Documentation
+  - url: openapi/tabs-platform-openapi.yml
+    type: OpenAPI
+  description: >-
+    Create, list, and get payments - the receipts (often bank-imported) that
+    settle invoices - and apply them across a customer's open invoices. Endpoint
+    path shapes are modeled - see review.yml.
+- aid: tabs-platform:tabs-platform-customers-api
+  name: Tabs Customers API
+  tags:
+  - Customers
+  - Contacts
+  - CRM
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.tabsplatform.com/docs/customers
+  baseURL: https://api.tabsplatform.com
+  properties:
+  - url: https://docs.tabsplatform.com/docs/customers
+    type: Documentation
+  - url: openapi/tabs-platform-openapi.yml
+    type: OpenAPI
+  description: >-
+    Create, list, get, update, and delete the businesses you bill, along with
+    their contacts, addresses, external IDs, and custom fields, and read a
+    customer's invoices and payments. Endpoint path shapes are modeled - see
+    review.yml.
+- aid: tabs-platform:tabs-platform-usage-events-api
+  name: Tabs Usage Events API
+  tags:
+  - Usage-Based Billing
+  - Metering
+  - Usage Events
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.tabsplatform.com/docs/usage-events-beta
+  baseURL: https://api.tabsplatform.com
+  properties:
+  - url: https://docs.tabsplatform.com/docs/usage-events-beta
+    type: Documentation
+  - url: openapi/tabs-platform-openapi.yml
+    type: OpenAPI
+  description: >-
+    Push, list, and delete usage events that track how customers consume
+    usage-based and metered products, feeding quantity calculations for dynamic
+    billing and forecasting. Endpoint path shapes are modeled - see review.yml.
+common:
+- type: Authentication
+  url: authentication/tabs-platform-authentication.yml
+- type: LinkedIn
+  url: https://www.linkedin.com/company/teamtabs
+- type: Website
+  url: https://tabs.inc
+- type: Documentation
+  url: https://docs.tabsplatform.com
+- type: Plans
+  url: plans/tabs-platform-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/tabs-platform-rate-limits.yml
+- type: FinOps
+  url: finops/tabs-platform-finops.yml
+- url: https://www.tabs.com/blog
+  type: Blog
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

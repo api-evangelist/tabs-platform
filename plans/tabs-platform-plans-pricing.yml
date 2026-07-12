@@ -1,0 +1,103 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Tabs
+providerId: tabs-platform
+created: '2026-07-11'
+modified: '2026-07-11'
+reconciled: false
+tags:
+- Revenue Recognition
+- ASC 606
+- Billing
+- Revenue Automation
+- Plans
+description: >-
+  Tabs is sold as a subscription to the revenue automation platform, priced by
+  company size (annual revenue) and volume of active contracts rather than as a
+  per-API-call fee. The published entry point is a Starter tier at roughly
+  $2,000/month for companies up to $5M in annual revenue and up to 100 active
+  contracts; larger companies ($5M-$20M, $20M-$50M, $50M+) move to custom
+  tiers quoted by sales. The Tabs Platform API is included with a Tabs
+  subscription - there is no separate metered charge for API access documented.
+notes: >-
+  Pricing figures are sourced from public pages and third-party listings and
+  are not reconciled against a live quote. Exact tier boundaries and amounts
+  should be verified with Tabs sales. No public "percentage of billings" pricing
+  is documented; tiers are keyed to annual revenue and active-contract count.
+sources:
+- https://www.tabs.com/pricing
+- https://tabs.inc/home
+- https://docs.tabsplatform.com
+plans:
+- id: tabs-starter
+  name: Starter
+  type: paid
+  description: >-
+    Entry tier for companies up to ~$5M in annual revenue and up to ~100 active
+    contracts. Includes AI contract ingestion, automated invoicing, ASC 606
+    revenue recognition, collections, reporting, and API access.
+  entries:
+  - label: Platform Subscription
+    name: platform_subscription
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: approximately $2,000/month (up to $5M annual revenue, up to 100 active contracts)
+    userMultiplied: false
+  elements:
+  - name: AI Contract Ingestion
+  - name: Automated Invoicing
+  - name: ASC 606 Revenue Recognition
+  - name: Collections
+  - name: Reporting (ARR, Cash, AR)
+  - name: Platform API Access
+- id: tabs-growth
+  name: Growth / Mid-Market
+  type: paid
+  description: >-
+    Custom-quoted tiers for companies in the ~$5M-$50M annual revenue range with
+    higher contract volumes. Adds capacity and typically deeper ERP/CRM
+    integration support.
+  entries:
+  - label: Platform Subscription
+    name: platform_subscription_growth
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: custom (keyed to annual revenue and active-contract volume)
+    userMultiplied: false
+  elements:
+  - name: Higher Contract Volume
+  - name: ERP and CRM Integrations
+  - name: Platform API Access
+- id: tabs-enterprise
+  name: Enterprise
+  type: enterprise
+  description: >-
+    Custom plan for companies with $50M+ in annual revenue, negotiated on
+    volume, integrations, security review, SLAs, and support. Talk to sales.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: Custom Volume Pricing
+  - name: SLAs and Priority Support
+  - name: Advanced Integrations and Security Review
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

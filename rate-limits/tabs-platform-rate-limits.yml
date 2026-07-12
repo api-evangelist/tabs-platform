@@ -1,0 +1,46 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Tabs
+providerId: tabs-platform
+created: '2026-07-11'
+modified: '2026-07-11'
+reconciled: false
+tags:
+- Billing
+- Revenue Recognition
+- Rate Limiting
+- Quotas
+description: >-
+  Tabs does not publish numeric API rate limits in its public developer
+  documentation as of the review date. The Tabs Platform API is a REST API
+  authenticated with an API key in the Authorization header; access is scoped to
+  your Tabs account. Tabs' SLA documents a 99.9% monthly uptime target
+  (excluding scheduled maintenance and force majeure) with tiered support
+  response times, but does not state per-minute or per-account request caps or
+  throttling behavior.
+notes: >-
+  No documented request-rate limits, quotas, or 429 throttling policy were found
+  in the public docs. Clients should still implement exponential backoff with
+  jitter and honor any Retry-After header. Verify current limits with Tabs
+  support (support@tabsplatform.com) before high-volume integration.
+sources:
+- https://docs.tabsplatform.com/docs/authentication
+- https://docs.tabsplatform.com/docs/slas-and-uptime
+- https://docs.tabsplatform.com
+responseCodes:
+  throttled: 429
+limits:
+- name: Platform API Requests
+  scope: account
+  metric: requests
+  limit: not published
+  notes: No fixed numeric request-rate limit is documented for the Tabs Platform API.
+policies:
+- name: Uptime SLA
+  description: Tabs targets 99.9% per-month uptime excluding scheduled maintenance and force majeure.
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter and honor Retry-After on any 429 responses.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

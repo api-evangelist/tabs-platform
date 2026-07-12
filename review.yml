@@ -1,0 +1,116 @@
+aid: tabs-platform
+name: Tabs
+review:
+  question: Does Tabs expose a documented public WebSocket API?
+  answer: false
+  date: '2026-07-11'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was authored. The Tabs Platform API is a
+    request/response REST API over HTTPS (base https://api.tabsplatform.com),
+    authenticated with an API key in the Authorization header. Tabs' public
+    developer documentation (docs.tabsplatform.com) describes no server-push
+    transport - no WebSocket (ws:// or wss://) and no documented SSE or webhook
+    stream on Tabs' own API - so there is no event-driven surface to model.
+    Data movement in and out of Tabs is done by calling REST endpoints (push
+    customers/contracts/obligations/usage in; pull invoices/payments/revenue
+    out) and via Tabs' native ERP/CRM integrations, not via a realtime socket.
+findings:
+  summary: |
+    Tabs does not publish a documented public WebSocket API. Tabs (tabs.inc) is
+    an AI-native B2B revenue automation platform (billing, collections, ASC 606
+    revenue recognition, reporting). Its public developer API - the Tabs
+    Platform API at https://api.tabsplatform.com, documented at
+    docs.tabsplatform.com - is pure request/response REST over HTTPS,
+    authenticated with an API key passed directly in the Authorization header
+    (Authorization: YOUR_API_KEY). The documented resource groups are Customers,
+    Contracts, Obligations, Billing Terms, Performance Obligations, Items,
+    Revenue Categories, Invoices (with actions and PDF export), Payments,
+    Credits/Commitments, Usage Events, and Reports (ARR, cash forecast). No
+    realtime, bidirectional, or streaming WebSocket endpoint is documented
+    anywhere in Tabs' developer documentation as of the review date.
+  accessModel: |
+    The developer documentation is fully public (no login required to read the
+    docs, data model, or authentication pages). API keys themselves are
+    self-service for Tabs customers: an administrator creates a key in the
+    Developers section of the Tabs app. Tabs is a paid subscription product
+    (Starter ~$2,000/month up to $5M annual revenue and ~100 active contracts;
+    higher tiers custom / talk to sales), and API access is included with the
+    subscription. So the API is publicly documented but account-gated for
+    actual calls - not open/unauthenticated.
+  endpointsModeled: true
+  endpointsModeledNote: |
+    Tabs' public docs describe the data model and enumerate the resource groups
+    and their operations (list/create/get/update/delete, invoice actions, PDF
+    download, obligation and performance-obligation management, recognized-
+    revenue upsert, ARR and cash-forecast reports, usage events), and the
+    confirmed base URL (https://api.tabsplatform.com) and Authorization-header
+    API-key auth. However, Tabs does not publish a downloadable OpenAPI file or
+    literal request path strings in its public documentation, and no OpenAPI
+    file was found at common locations (openapi.json/yaml returned 404). The
+    OpenAPI in this repo therefore MODELS the endpoint path strings on standard
+    REST conventions consistent with the documented operations; base URL, auth,
+    resource set, and operation set are sourced, but exact paths and schemas
+    should be verified against the live console reference.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://api.tabsplatform.com
+      documented: true
+      note: The Tabs Platform API. Request/response REST, API key in Authorization header.
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented anywhere in Tabs' developer docs as of the review date.
+    - protocol: SSE
+      scheme: https
+      documented: false
+      note: No documented server-sent-events stream on Tabs' own API.
+  documentedResourceGroups:
+    - Customers (with Contacts, Addresses, External IDs, Custom Fields)
+    - Contracts (files, Obligations, Billing Terms, Performance Obligations)
+    - Obligations
+    - Invoices (line items, actions, PDF download, PO/memo/external IDs)
+    - Payments
+    - Credits and Commitments
+    - Usage Events (beta and legacy)
+    - Items and Revenue Categories
+    - Reports (Revenue, ARR, Cash Forecast)
+    - Health / System (liveness, health)
+sources:
+  - url: https://docs.tabsplatform.com/docs/getting-started
+    type: Documentation
+    note: Getting started; links to authentication and the data model. References llms.txt for an OpenAPI-formatted endpoint index.
+  - url: https://docs.tabsplatform.com/docs/authentication
+    type: Documentation
+    note: API key passed directly in the Authorization header; keys created in the Developers section by an admin. No Bearer prefix.
+  - url: https://docs.tabsplatform.com/docs/the-tabs-data-model
+    type: Documentation
+    note: Core data model - customers, contracts, items, revenue categories, obligations, invoices, payments, usage events.
+  - url: https://docs.tabsplatform.com/llms.txt
+    type: Documentation
+    note: Index of doc pages and resource groups/operations formatted for AI agents; enumerates REST operations per resource. All REST; no WebSocket.
+  - url: https://docs.tabsplatform.com/docs/slas-and-uptime
+    type: Documentation
+    note: 99.9% monthly uptime target and tiered support response times. No rate limits or WebSocket mentioned.
+  - url: https://apis.io/providers/tabs-fi/
+    type: Documentation
+    note: Existing APIs.io profile confirming base URL https://api.tabsplatform.com and API-key auth in the Authorization header.
+  - url: https://tabs.inc/home
+    type: Website
+    note: Company site - AI-native B2B revenue automation (billing, collections, ASC 606 rev rec, reporting).
+  - url: https://www.tabs.com/pricing
+    type: Pricing
+    note: Starter ~$2,000/month (up to $5M annual revenue, ~100 active contracts); higher tiers custom / talk to sales.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket protocol surface exists on Tabs' own API, and the public API is
+    request/response REST. No AsyncAPI document was created because there is no
+    server-push transport to model. The apis.yml catalogs the documented REST
+    resource groups as logical APIs (Contracts, Invoices, Revenue Recognition,
+    Payments, Customers, Usage Events), and the OpenAPI models endpoint paths on
+    standard REST conventions (endpointsModeled: true) because Tabs does not
+    publish literal path strings or a downloadable OpenAPI file.

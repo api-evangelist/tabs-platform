@@ -1,0 +1,19 @@
+generated: '2026-07-11'
+method: sourced
+source: https://docs.tabsplatform.com/docs/authentication
+summary:
+  types:
+  - apiKey
+schemes:
+- name: apiKeyAuth
+  type: apiKey
+  in: header
+  scheme: none
+  description: >-
+    API key passed directly in the Authorization header
+    (`Authorization: YOUR_API_KEY`, no Bearer prefix). Keys are created in the
+    Developers section of the Tabs app and require administrator privileges;
+    non-admins must contact their Tabs administrator. Keys should be treated as
+    confidential; self-service key rotation is noted as a planned capability.
+  sources:
+  - https://docs.tabsplatform.com/docs/authentication

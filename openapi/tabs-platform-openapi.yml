@@ -1,0 +1,958 @@
+openapi: 3.0.3
+info:
+  title: Tabs Platform API
+  description: >-
+    The Tabs Platform API is the public REST API for Tabs (tabs.inc), an
+    AI-native revenue automation platform for B2B companies that unifies
+    billing, collections, ASC 606 revenue recognition, and reporting on top of
+    a contract-driven data model. The API exposes the core Tabs data model -
+    customers, contracts, items, revenue categories, obligations, invoices,
+    payments, usage events, and performance obligations - so contract, billing,
+    and revenue data can flow into the rest of the finance stack (ERP, CRM,
+    payment, and tax systems). You can push customers, contracts, obligations,
+    and usage into Tabs, and pull invoices, payments, recognized revenue, ARR,
+    and cash-forecast reporting back out.
+
+    NOTE ON ENDPOINT SHAPES: Tabs publishes public developer documentation at
+    docs.tabsplatform.com describing the data model, authentication, and the
+    documented resource groups and operations (list/create/get/update/delete
+    per resource, invoice actions and PDF download, obligation and performance-
+    obligation management, recognized-revenue upsert, ARR and cash-forecast
+    reports, usage events). The base URL (https://api.tabsplatform.com) and
+    Authorization-header API-key auth are confirmed from those docs. The exact
+    request/response path strings below are MODELED on standard REST conventions
+    consistent with the documented operations, because Tabs does not publish a
+    downloadable OpenAPI file or literal path strings in its public docs as of
+    the review date. Verify concrete paths and schemas against the live console
+    reference before use.
+  version: '1.0'
+  contact:
+    name: Tabs
+    url: https://tabs.inc
+  x-endpointsModeled: true
+servers:
+  - url: https://api.tabsplatform.com
+    description: Tabs Platform production API
+security:
+  - apiKeyAuth: []
+tags:
+  - name: Customers
+    description: The businesses you bill, with contacts, addresses, and external IDs.
+  - name: Contracts
+    description: Customer agreements defining dates, terms, obligations, and billing terms.
+  - name: Obligations
+    description: Commitments linked to GL items that generate invoice line items.
+  - name: Invoices
+    description: Itemized requests for payment derived from obligations, with actions and PDF export.
+  - name: Payments
+    description: Receipts (often bank-imported) that settle invoices.
+  - name: Revenue Recognition
+    description: ASC 606 performance obligations, recognized revenue, ARR and cash-forecast reporting.
+  - name: Usage Events
+    description: Consumption records that feed usage-based and metered billing.
+  - name: Catalog
+    description: Items (GL-mapped products/services) and revenue categories.
+paths:
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [Customers]
+      summary: List customers
+      responses:
+        '200':
+          description: A list of customers.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createCustomer
+      tags: [Customers]
+      summary: Create a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: The created customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /customers/{customerId}:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    get:
+      operationId: getCustomer
+      tags: [Customers]
+      summary: Get a customer
+      responses:
+        '200':
+          description: The requested customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateCustomer
+      tags: [Customers]
+      summary: Update a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: The updated customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      operationId: deleteCustomer
+      tags: [Customers]
+      summary: Delete a customer
+      responses:
+        '204':
+          description: Customer deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /customers/{customerId}/contacts:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    get:
+      operationId: listCustomerContacts
+      tags: [Customers]
+      summary: List customer contacts
+      responses:
+        '200':
+          description: A list of contacts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createCustomerContact
+      tags: [Customers]
+      summary: Create a customer contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '201':
+          description: The created contact.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /customers/{customerId}/invoices:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    get:
+      operationId: listCustomerInvoices
+      tags: [Customers, Invoices]
+      summary: List invoices for a customer
+      responses:
+        '200':
+          description: A list of invoices for the customer.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contracts:
+    get:
+      operationId: listContracts
+      tags: [Contracts]
+      summary: List contracts
+      responses:
+        '200':
+          description: A list of contracts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createContract
+      tags: [Contracts]
+      summary: Create a contract
+      description: >-
+        Create a contract. Tabs can also ingest an executed contract document
+        and use AI extraction to derive billing terms and obligations; this
+        endpoint accepts the structured contract representation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        '201':
+          description: The created contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contracts/{contractId}:
+    parameters:
+      - $ref: '#/components/parameters/ContractId'
+    get:
+      operationId: getContract
+      tags: [Contracts]
+      summary: Get a contract
+      responses:
+        '200':
+          description: The requested contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateContract
+      tags: [Contracts]
+      summary: Update a contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        '200':
+          description: The updated contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contracts/{contractId}/files:
+    parameters:
+      - $ref: '#/components/parameters/ContractId'
+    post:
+      operationId: uploadContractFile
+      tags: [Contracts]
+      summary: Upload a contract file
+      description: Upload the executed contract document for AI ingestion and record-keeping.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: File uploaded.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contracts/{contractId}/obligations:
+    parameters:
+      - $ref: '#/components/parameters/ContractId'
+    get:
+      operationId: listContractObligations
+      tags: [Contracts, Obligations]
+      summary: List obligations for a contract
+      responses:
+        '200':
+          description: A list of obligations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Obligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createContractObligation
+      tags: [Contracts, Obligations]
+      summary: Create an obligation on a contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Obligation'
+      responses:
+        '201':
+          description: The created obligation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Obligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /obligations:
+    get:
+      operationId: listObligations
+      tags: [Obligations]
+      summary: List obligations
+      responses:
+        '200':
+          description: A list of obligations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Obligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /invoices:
+    get:
+      operationId: listInvoices
+      tags: [Invoices]
+      summary: List invoices
+      responses:
+        '200':
+          description: A list of invoices.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /invoices/{invoiceId}:
+    parameters:
+      - $ref: '#/components/parameters/InvoiceId'
+    get:
+      operationId: getInvoice
+      tags: [Invoices]
+      summary: Get an invoice
+      responses:
+        '200':
+          description: The requested invoice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateInvoice
+      tags: [Invoices]
+      summary: Update an invoice
+      description: Update invoice metadata such as PO number, memo, and external IDs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+      responses:
+        '200':
+          description: The updated invoice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /invoices/{invoiceId}/pdf:
+    parameters:
+      - $ref: '#/components/parameters/InvoiceId'
+    get:
+      operationId: downloadInvoicePdf
+      tags: [Invoices]
+      summary: Download an invoice PDF
+      responses:
+        '200':
+          description: The invoice PDF.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /invoices/{invoiceId}/actions:
+    parameters:
+      - $ref: '#/components/parameters/InvoiceId'
+    post:
+      operationId: performInvoiceAction
+      tags: [Invoices]
+      summary: Perform an action on an invoice
+      description: Perform a lifecycle action on an invoice, such as finalize, send, void, or mark paid.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [finalize, send, void, mark_paid]
+      responses:
+        '200':
+          description: The updated invoice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /payments:
+    get:
+      operationId: listPayments
+      tags: [Payments]
+      summary: List payments
+      responses:
+        '200':
+          description: A list of payments.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createPayment
+      tags: [Payments]
+      summary: Create a payment
+      description: Record a payment that settles one or more invoices.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '201':
+          description: The created payment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /payments/{paymentId}:
+    parameters:
+      - name: paymentId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getPayment
+      tags: [Payments]
+      summary: Get a payment
+      responses:
+        '200':
+          description: The requested payment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /revenue:
+    get:
+      operationId: listRevenue
+      tags: [Revenue Recognition]
+      summary: List recognized revenue
+      description: >-
+        List ASC 606-compliant recognized revenue derived from performance
+        obligations and their revenue schedules.
+      responses:
+        '200':
+          description: Recognized revenue records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RevenueRecord'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /performance-obligations:
+    get:
+      operationId: searchPerformanceObligations
+      tags: [Revenue Recognition]
+      summary: Search performance obligations
+      description: Search ASC 606 performance obligations across contracts.
+      responses:
+        '200':
+          description: A list of performance obligations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PerformanceObligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /performance-obligations/{performanceObligationId}/recognized-revenue:
+    parameters:
+      - name: performanceObligationId
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: upsertRecognizedRevenue
+      tags: [Revenue Recognition]
+      summary: Upsert recognized revenue for a performance obligation
+      description: Override or set the recognized revenue schedule for an ASC 606 performance obligation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevenueRecord'
+      responses:
+        '200':
+          description: The updated performance obligation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceObligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /reports/arr:
+    get:
+      operationId: getArrReport
+      tags: [Revenue Recognition]
+      summary: Get ARR report
+      description: Retrieve the annual recurring revenue (ARR) report.
+      responses:
+        '200':
+          description: The ARR report.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /reports/cash-forecast:
+    get:
+      operationId: getCashForecast
+      tags: [Revenue Recognition]
+      summary: Get cash forecast
+      description: Retrieve the cash-forecast report derived from invoices and payment behavior.
+      responses:
+        '200':
+          description: The cash-forecast report.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /usage-events:
+    get:
+      operationId: listUsageEvents
+      tags: [Usage Events]
+      summary: List usage events
+      responses:
+        '200':
+          description: A list of usage events.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UsageEvent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createUsageEvent
+      tags: [Usage Events]
+      summary: Create a usage event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageEvent'
+      responses:
+        '201':
+          description: The created usage event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageEvent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /usage-events/{eventId}:
+    parameters:
+      - name: eventId
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      operationId: deleteUsageEvent
+      tags: [Usage Events]
+      summary: Delete a usage event
+      responses:
+        '204':
+          description: Usage event deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /items:
+    get:
+      operationId: listItems
+      tags: [Catalog]
+      summary: List items
+      description: List items - products/services mapped to GL accounting codes.
+      responses:
+        '200':
+          description: A list of items.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Item'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [Catalog]
+      summary: List revenue categories
+      responses:
+        '200':
+          description: A list of revenue categories.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: >-
+        API key passed directly in the Authorization header
+        (Authorization: YOUR_API_KEY). Keys are created in the Developers
+        section of the Tabs app and require administrator privileges.
+  parameters:
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+    ContractId:
+      name: contractId
+      in: path
+      required: true
+      schema:
+        type: string
+    InvoiceId:
+      name: invoiceId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        autoCharge:
+          type: boolean
+        creditCardFeesEnabled:
+          type: boolean
+        customFields:
+          type: object
+          additionalProperties: true
+        externalIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalId'
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+    ExternalId:
+      type: object
+      properties:
+        system:
+          type: string
+          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
+        value:
+          type: string
+    Contract:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+        obligations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Obligation'
+    Obligation:
+      type: object
+      description: A commitment linked to a GL item that generates invoice line items.
+      properties:
+        id:
+          type: string
+        contractId:
+          type: string
+        itemId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        contractId:
+          type: string
+        status:
+          type: string
+        poNumber:
+          type: string
+        memo:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        total:
+          type: number
+        currency:
+          type: string
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLineItem'
+    InvoiceLineItem:
+      type: object
+      properties:
+        id:
+          type: string
+        obligationId:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+        amount:
+          type: number
+        salesTax:
+          type: number
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        receivedDate:
+          type: string
+          format: date
+        appliedInvoiceIds:
+          type: array
+          items:
+            type: string
+    PerformanceObligation:
+      type: object
+      description: An ASC 606 performance obligation used to schedule revenue recognition.
+      properties:
+        id:
+          type: string
+        contractId:
+          type: string
+        obligationId:
+          type: string
+        recognitionMethod:
+          type: string
+        totalAmount:
+          type: number
+    RevenueRecord:
+      type: object
+      properties:
+        performanceObligationId:
+          type: string
+        period:
+          type: string
+        recognizedAmount:
+          type: number
+        currency:
+          type: string
+    UsageEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        eventType:
+          type: string
+        quantity:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        glCode:
+          type: string
+        categoryId:
+          type: string
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
