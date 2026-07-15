@@ -149,6 +149,8 @@ apis:
     usage-based and metered products, feeding quantity calculations for dynamic
     billing and forecasting. Endpoint path shapes are modeled - see review.yml.
 common:
+- type: AgenticAccess
+  url: agentic-access/tabs-platform-agentic-access.yml
 - type: Authentication
   url: authentication/tabs-platform-authentication.yml
 - type: LinkedIn
