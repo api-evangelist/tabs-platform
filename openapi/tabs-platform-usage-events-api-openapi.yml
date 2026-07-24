@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: Tabs Platform Catalog Usage Events API
+  description: 'The Tabs Platform API is the public REST API for Tabs (tabs.inc), an AI-native revenue automation platform for B2B companies that unifies billing, collections, ASC 606 revenue recognition, and reporting on top of a contract-driven data model. The API exposes the core Tabs data model - customers, contracts, items, revenue categories, obligations, invoices, payments, usage events, and performance obligations - so contract, billing, and revenue data can flow into the rest of the finance stack (ERP, CRM, payment, and tax systems). You can push customers, contracts, obligations, and usage into Tabs, and pull invoices, payments, recognized revenue, ARR, and cash-forecast reporting back out.
+
+    NOTE ON ENDPOINT SHAPES: Tabs publishes public developer documentation at docs.tabsplatform.com describing the data model, authentication, and the documented resource groups and operations (list/create/get/update/delete per resource, invoice actions and PDF download, obligation and performance- obligation management, recognized-revenue upsert, ARR and cash-forecast reports, usage events). The base URL (https://api.tabsplatform.com) and Authorization-header API-key auth are confirmed from those docs. The exact request/response path strings below are MODELED on standard REST conventions consistent with the documented operations, because Tabs does not publish a downloadable OpenAPI file or literal path strings in its public docs as of the review date. Verify concrete paths and schemas against the live console reference before use.'
+  version: '1.0'
+  contact:
+    name: Tabs
+    url: https://tabs.inc
+  x-endpointsModeled: true
+servers:
+- url: https://api.tabsplatform.com
+  description: Tabs Platform production API
+security:
+- apiKeyAuth: []
+tags:
+- name: Usage Events
+  description: Consumption records that feed usage-based and metered billing.
+paths:
+  /usage-events:
+    get:
+      operationId: listUsageEvents
+      tags:
+      - Usage Events
+      summary: List usage events
+      responses:
+        '200':
+          description: A list of usage events.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UsageEvent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createUsageEvent
+      tags:
+      - Usage Events
+      summary: Create a usage event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageEvent'
+      responses:
+        '201':
+          description: The created usage event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageEvent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /usage-events/{eventId}:
+    parameters:
+    - name: eventId
+      in: path
+      required: true
+      schema:
+        type: string
+    delete:
+      operationId: deleteUsageEvent
+      tags:
+      - Usage Events
+      summary: Delete a usage event
+      responses:
+        '204':
+          description: Usage event deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    UsageEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        eventType:
+          type: string
+        quantity:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'API key passed directly in the Authorization header (Authorization: YOUR_API_KEY). Keys are created in the Developers section of the Tabs app and require administrator privileges.'

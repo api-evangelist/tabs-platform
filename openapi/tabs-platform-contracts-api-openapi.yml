@@ -1,0 +1,240 @@
+openapi: 3.0.3
+info:
+  title: Tabs Platform Catalog Contracts API
+  description: 'The Tabs Platform API is the public REST API for Tabs (tabs.inc), an AI-native revenue automation platform for B2B companies that unifies billing, collections, ASC 606 revenue recognition, and reporting on top of a contract-driven data model. The API exposes the core Tabs data model - customers, contracts, items, revenue categories, obligations, invoices, payments, usage events, and performance obligations - so contract, billing, and revenue data can flow into the rest of the finance stack (ERP, CRM, payment, and tax systems). You can push customers, contracts, obligations, and usage into Tabs, and pull invoices, payments, recognized revenue, ARR, and cash-forecast reporting back out.
+
+    NOTE ON ENDPOINT SHAPES: Tabs publishes public developer documentation at docs.tabsplatform.com describing the data model, authentication, and the documented resource groups and operations (list/create/get/update/delete per resource, invoice actions and PDF download, obligation and performance- obligation management, recognized-revenue upsert, ARR and cash-forecast reports, usage events). The base URL (https://api.tabsplatform.com) and Authorization-header API-key auth are confirmed from those docs. The exact request/response path strings below are MODELED on standard REST conventions consistent with the documented operations, because Tabs does not publish a downloadable OpenAPI file or literal path strings in its public docs as of the review date. Verify concrete paths and schemas against the live console reference before use.'
+  version: '1.0'
+  contact:
+    name: Tabs
+    url: https://tabs.inc
+  x-endpointsModeled: true
+servers:
+- url: https://api.tabsplatform.com
+  description: Tabs Platform production API
+security:
+- apiKeyAuth: []
+tags:
+- name: Contracts
+  description: Customer agreements defining dates, terms, obligations, and billing terms.
+paths:
+  /contracts:
+    get:
+      operationId: listContracts
+      tags:
+      - Contracts
+      summary: List contracts
+      responses:
+        '200':
+          description: A list of contracts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createContract
+      tags:
+      - Contracts
+      summary: Create a contract
+      description: Create a contract. Tabs can also ingest an executed contract document and use AI extraction to derive billing terms and obligations; this endpoint accepts the structured contract representation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        '201':
+          description: The created contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contracts/{contractId}:
+    parameters:
+    - $ref: '#/components/parameters/ContractId'
+    get:
+      operationId: getContract
+      tags:
+      - Contracts
+      summary: Get a contract
+      responses:
+        '200':
+          description: The requested contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateContract
+      tags:
+      - Contracts
+      summary: Update a contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        '200':
+          description: The updated contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contracts/{contractId}/files:
+    parameters:
+    - $ref: '#/components/parameters/ContractId'
+    post:
+      operationId: uploadContractFile
+      tags:
+      - Contracts
+      summary: Upload a contract file
+      description: Upload the executed contract document for AI ingestion and record-keeping.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: File uploaded.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contracts/{contractId}/obligations:
+    parameters:
+    - $ref: '#/components/parameters/ContractId'
+    get:
+      operationId: listContractObligations
+      tags:
+      - Contracts
+      summary: List obligations for a contract
+      responses:
+        '200':
+          description: A list of obligations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Obligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createContractObligation
+      tags:
+      - Contracts
+      summary: Create an obligation on a contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Obligation'
+      responses:
+        '201':
+          description: The created obligation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Obligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Contract:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+        obligations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Obligation'
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    Obligation:
+      type: object
+      description: A commitment linked to a GL item that generates invoice line items.
+      properties:
+        id:
+          type: string
+        contractId:
+          type: string
+        itemId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+  parameters:
+    ContractId:
+      name: contractId
+      in: path
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'API key passed directly in the Authorization header (Authorization: YOUR_API_KEY). Keys are created in the Developers section of the Tabs app and require administrator privileges.'

@@ -1,0 +1,169 @@
+openapi: 3.0.3
+info:
+  title: Tabs Platform Catalog Revenue Recognition API
+  description: 'The Tabs Platform API is the public REST API for Tabs (tabs.inc), an AI-native revenue automation platform for B2B companies that unifies billing, collections, ASC 606 revenue recognition, and reporting on top of a contract-driven data model. The API exposes the core Tabs data model - customers, contracts, items, revenue categories, obligations, invoices, payments, usage events, and performance obligations - so contract, billing, and revenue data can flow into the rest of the finance stack (ERP, CRM, payment, and tax systems). You can push customers, contracts, obligations, and usage into Tabs, and pull invoices, payments, recognized revenue, ARR, and cash-forecast reporting back out.
+
+    NOTE ON ENDPOINT SHAPES: Tabs publishes public developer documentation at docs.tabsplatform.com describing the data model, authentication, and the documented resource groups and operations (list/create/get/update/delete per resource, invoice actions and PDF download, obligation and performance- obligation management, recognized-revenue upsert, ARR and cash-forecast reports, usage events). The base URL (https://api.tabsplatform.com) and Authorization-header API-key auth are confirmed from those docs. The exact request/response path strings below are MODELED on standard REST conventions consistent with the documented operations, because Tabs does not publish a downloadable OpenAPI file or literal path strings in its public docs as of the review date. Verify concrete paths and schemas against the live console reference before use.'
+  version: '1.0'
+  contact:
+    name: Tabs
+    url: https://tabs.inc
+  x-endpointsModeled: true
+servers:
+- url: https://api.tabsplatform.com
+  description: Tabs Platform production API
+security:
+- apiKeyAuth: []
+tags:
+- name: Revenue Recognition
+  description: ASC 606 performance obligations, recognized revenue, ARR and cash-forecast reporting.
+paths:
+  /revenue:
+    get:
+      operationId: listRevenue
+      tags:
+      - Revenue Recognition
+      summary: List recognized revenue
+      description: List ASC 606-compliant recognized revenue derived from performance obligations and their revenue schedules.
+      responses:
+        '200':
+          description: Recognized revenue records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RevenueRecord'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /performance-obligations:
+    get:
+      operationId: searchPerformanceObligations
+      tags:
+      - Revenue Recognition
+      summary: Search performance obligations
+      description: Search ASC 606 performance obligations across contracts.
+      responses:
+        '200':
+          description: A list of performance obligations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PerformanceObligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /performance-obligations/{performanceObligationId}/recognized-revenue:
+    parameters:
+    - name: performanceObligationId
+      in: path
+      required: true
+      schema:
+        type: string
+    put:
+      operationId: upsertRecognizedRevenue
+      tags:
+      - Revenue Recognition
+      summary: Upsert recognized revenue for a performance obligation
+      description: Override or set the recognized revenue schedule for an ASC 606 performance obligation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevenueRecord'
+      responses:
+        '200':
+          description: The updated performance obligation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceObligation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /reports/arr:
+    get:
+      operationId: getArrReport
+      tags:
+      - Revenue Recognition
+      summary: Get ARR report
+      description: Retrieve the annual recurring revenue (ARR) report.
+      responses:
+        '200':
+          description: The ARR report.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /reports/cash-forecast:
+    get:
+      operationId: getCashForecast
+      tags:
+      - Revenue Recognition
+      summary: Get cash forecast
+      description: Retrieve the cash-forecast report derived from invoices and payment behavior.
+      responses:
+        '200':
+          description: The cash-forecast report.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    RevenueRecord:
+      type: object
+      properties:
+        performanceObligationId:
+          type: string
+        period:
+          type: string
+        recognizedAmount:
+          type: number
+        currency:
+          type: string
+    PerformanceObligation:
+      type: object
+      description: An ASC 606 performance obligation used to schedule revenue recognition.
+      properties:
+        id:
+          type: string
+        contractId:
+          type: string
+        obligationId:
+          type: string
+        recognitionMethod:
+          type: string
+        totalAmount:
+          type: number
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'API key passed directly in the Authorization header (Authorization: YOUR_API_KEY). Keys are created in the Developers section of the Tabs app and require administrator privileges.'

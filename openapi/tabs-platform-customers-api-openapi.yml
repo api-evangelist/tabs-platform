@@ -1,0 +1,287 @@
+openapi: 3.0.3
+info:
+  title: Tabs Platform Catalog Customers API
+  description: 'The Tabs Platform API is the public REST API for Tabs (tabs.inc), an AI-native revenue automation platform for B2B companies that unifies billing, collections, ASC 606 revenue recognition, and reporting on top of a contract-driven data model. The API exposes the core Tabs data model - customers, contracts, items, revenue categories, obligations, invoices, payments, usage events, and performance obligations - so contract, billing, and revenue data can flow into the rest of the finance stack (ERP, CRM, payment, and tax systems). You can push customers, contracts, obligations, and usage into Tabs, and pull invoices, payments, recognized revenue, ARR, and cash-forecast reporting back out.
+
+    NOTE ON ENDPOINT SHAPES: Tabs publishes public developer documentation at docs.tabsplatform.com describing the data model, authentication, and the documented resource groups and operations (list/create/get/update/delete per resource, invoice actions and PDF download, obligation and performance- obligation management, recognized-revenue upsert, ARR and cash-forecast reports, usage events). The base URL (https://api.tabsplatform.com) and Authorization-header API-key auth are confirmed from those docs. The exact request/response path strings below are MODELED on standard REST conventions consistent with the documented operations, because Tabs does not publish a downloadable OpenAPI file or literal path strings in its public docs as of the review date. Verify concrete paths and schemas against the live console reference before use.'
+  version: '1.0'
+  contact:
+    name: Tabs
+    url: https://tabs.inc
+  x-endpointsModeled: true
+servers:
+- url: https://api.tabsplatform.com
+  description: Tabs Platform production API
+security:
+- apiKeyAuth: []
+tags:
+- name: Customers
+  description: The businesses you bill, with contacts, addresses, and external IDs.
+paths:
+  /customers:
+    get:
+      operationId: listCustomers
+      tags:
+      - Customers
+      summary: List customers
+      responses:
+        '200':
+          description: A list of customers.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createCustomer
+      tags:
+      - Customers
+      summary: Create a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: The created customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /customers/{customerId}:
+    parameters:
+    - $ref: '#/components/parameters/CustomerId'
+    get:
+      operationId: getCustomer
+      tags:
+      - Customers
+      summary: Get a customer
+      responses:
+        '200':
+          description: The requested customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateCustomer
+      tags:
+      - Customers
+      summary: Update a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: The updated customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      operationId: deleteCustomer
+      tags:
+      - Customers
+      summary: Delete a customer
+      responses:
+        '204':
+          description: Customer deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /customers/{customerId}/contacts:
+    parameters:
+    - $ref: '#/components/parameters/CustomerId'
+    get:
+      operationId: listCustomerContacts
+      tags:
+      - Customers
+      summary: List customer contacts
+      responses:
+        '200':
+          description: A list of contacts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createCustomerContact
+      tags:
+      - Customers
+      summary: Create a customer contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '201':
+          description: The created contact.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /customers/{customerId}/invoices:
+    parameters:
+    - $ref: '#/components/parameters/CustomerId'
+    get:
+      operationId: listCustomerInvoices
+      tags:
+      - Customers
+      summary: List invoices for a customer
+      responses:
+        '200':
+          description: A list of invoices for the customer.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        autoCharge:
+          type: boolean
+        creditCardFeesEnabled:
+          type: boolean
+        customFields:
+          type: object
+          additionalProperties: true
+        externalIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalId'
+    InvoiceLineItem:
+      type: object
+      properties:
+        id:
+          type: string
+        obligationId:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+        amount:
+          type: number
+        salesTax:
+          type: number
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        contractId:
+          type: string
+        status:
+          type: string
+        poNumber:
+          type: string
+        memo:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        total:
+          type: number
+        currency:
+          type: string
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLineItem'
+    ExternalId:
+      type: object
+      properties:
+        system:
+          type: string
+          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
+        value:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+  parameters:
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'API key passed directly in the Authorization header (Authorization: YOUR_API_KEY). Keys are created in the Developers section of the Tabs app and require administrator privileges.'
