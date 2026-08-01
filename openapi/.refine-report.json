@@ -1,0 +1,28 @@
+{
+  "provider": "tabs-platform",
+  "sources": [
+    "tabs-platform-catalog-api-openapi.yml",
+    "tabs-platform-contracts-api-openapi.yml",
+    "tabs-platform-customers-api-openapi.yml",
+    "tabs-platform-invoices-api-openapi.yml",
+    "tabs-platform-obligations-api-openapi.yml",
+    "tabs-platform-payments-api-openapi.yml",
+    "tabs-platform-revenue-recognition-api-openapi.yml",
+    "tabs-platform-usage-events-api-openapi.yml"
+  ],
+  "outputs": [
+    "tabs-platform-catalog-api-openapi.yml",
+    "tabs-platform-contracts-api-openapi.yml",
+    "tabs-platform-customers-api-openapi.yml",
+    "tabs-platform-invoices-api-openapi.yml",
+    "tabs-platform-obligations-api-openapi.yml",
+    "tabs-platform-payments-api-openapi.yml",
+    "tabs-platform-revenue-recognition-api-openapi.yml",
+    "tabs-platform-usage-events-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
