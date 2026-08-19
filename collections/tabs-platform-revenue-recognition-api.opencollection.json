@@ -1,0 +1,92 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Tabs Platform Catalog Revenue Recognition API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Revenue Recognition",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List recognized revenue",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.tabsplatform.com/revenue"
+          },
+          "docs": "List ASC 606-compliant recognized revenue derived from performance obligations and their revenue schedules."
+        },
+        {
+          "info": {
+            "name": "Search performance obligations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.tabsplatform.com/performance-obligations"
+          },
+          "docs": "Search ASC 606 performance obligations across contracts."
+        },
+        {
+          "info": {
+            "name": "Upsert recognized revenue for a performance obligation",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.tabsplatform.com/performance-obligations/:performanceObligationId/recognized-revenue",
+            "params": [
+              {
+                "name": "performanceObligationId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Override or set the recognized revenue schedule for an ASC 606 performance obligation."
+        },
+        {
+          "info": {
+            "name": "Get ARR report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.tabsplatform.com/reports/arr"
+          },
+          "docs": "Retrieve the annual recurring revenue (ARR) report."
+        },
+        {
+          "info": {
+            "name": "Get cash forecast",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.tabsplatform.com/reports/cash-forecast"
+          },
+          "docs": "Retrieve the cash-forecast report derived from invoices and payment behavior."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
