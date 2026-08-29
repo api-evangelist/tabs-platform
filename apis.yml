@@ -16,6 +16,18 @@ description: >-
   stack (ERP, CRM, payment, and tax systems). Supports subscription,
   usage-based, metered, and hybrid billing models. Authenticated with an API
   key passed in the Authorization header.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: paid
   onboarding: self-serve
