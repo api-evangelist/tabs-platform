@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Tabs Platform Catalog Customers API
-  description: 'The Tabs Platform API is the public REST API for Tabs (tabs.inc), an AI-native revenue automation platform for B2B companies that unifies billing, collections, ASC 606 revenue recognition, and reporting on top of a contract-driven data model. The API exposes the core Tabs data model - customers, contracts, items, revenue categories, obligations, invoices, payments, usage events, and performance obligations - so contract, billing, and revenue data can flow into the rest of the finance stack (ERP, CRM, payment, and tax systems). You can push customers, contracts, obligations, and usage into Tabs, and pull invoices, payments, recognized revenue, ARR, and cash-forecast reporting back out.
-
-    NOTE ON ENDPOINT SHAPES: Tabs publishes public developer documentation at docs.tabsplatform.com describing the data model, authentication, and the documented resource groups and operations (list/create/get/update/delete per resource, invoice actions and PDF download, obligation and performance- obligation management, recognized-revenue upsert, ARR and cash-forecast reports, usage events). The base URL (https://api.tabsplatform.com) and Authorization-header API-key auth are confirmed from those docs. The exact request/response path strings below are MODELED on standard REST conventions consistent with the documented operations, because Tabs does not publish a downloadable OpenAPI file or literal path strings in its public docs as of the review date. Verify concrete paths and schemas against the live console reference before use.'
+  title: Tabs Platform Customers API
+  description: The Tabs Platform API is the public REST API for Tabs (tabs.inc), an AI-native revenue automation platform for B2B companies that unifies billing, collections, ASC 606 revenue recognition, and reporting on top of a contract-driven data model.
   version: '1.0'
   contact:
     name: Tabs
@@ -172,20 +170,33 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid API key.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        contractId:
+          type: string
+        status:
+          type: string
+        poNumber:
+          type: string
+        memo:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        total:
+          type: number
+        currency:
+          type: string
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLineItem'
     Contact:
       type: object
       properties:
@@ -197,6 +208,21 @@ components:
           type: string
           format: email
         role:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    ExternalId:
+      type: object
+      properties:
+        system:
+          type: string
+          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
+        value:
           type: string
     Customer:
       type: object
@@ -231,47 +257,19 @@ components:
           type: number
         salesTax:
           type: number
-    Invoice:
-      type: object
-      properties:
-        id:
-          type: string
-        customerId:
-          type: string
-        contractId:
-          type: string
-        status:
-          type: string
-        poNumber:
-          type: string
-        memo:
-          type: string
-        dueDate:
-          type: string
-          format: date
-        total:
-          type: number
-        currency:
-          type: string
-        lineItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/InvoiceLineItem'
-    ExternalId:
-      type: object
-      properties:
-        system:
-          type: string
-          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
-        value:
-          type: string
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   parameters:
     CustomerId:
       name: customerId
