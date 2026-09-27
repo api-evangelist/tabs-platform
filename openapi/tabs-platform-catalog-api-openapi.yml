@@ -59,6 +59,17 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        glCode:
+          type: string
+        categoryId:
+          type: string
     Error:
       type: object
       properties:
@@ -72,17 +83,6 @@ components:
         id:
           type: string
         name:
-          type: string
-    Item:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        glCode:
-          type: string
-        categoryId:
           type: string
   responses:
     Unauthorized:

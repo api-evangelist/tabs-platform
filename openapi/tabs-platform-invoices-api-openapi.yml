@@ -149,7 +149,35 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    InvoiceLineItem:
+      type: object
+      properties:
+        id:
+          type: string
+        obligationId:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+        amount:
+          type: number
+        salesTax:
+          type: number
     Invoice:
       type: object
       properties:
@@ -183,47 +211,19 @@ components:
           type: string
         message:
           type: string
-    InvoiceLineItem:
-      type: object
-      properties:
-        id:
-          type: string
-        obligationId:
-          type: string
-        description:
-          type: string
-        quantity:
-          type: number
-        amount:
-          type: number
-        salesTax:
-          type: number
   parameters:
-    InvoiceId:
-      name: invoiceId
-      in: path
-      required: true
-      schema:
-        type: string
     CustomerId:
       name: customerId
       in: path
       required: true
       schema:
         type: string
-  responses:
-    Unauthorized:
-      description: Missing or invalid API key.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+    InvoiceId:
+      name: invoiceId
+      in: path
+      required: true
+      schema:
+        type: string
   securitySchemes:
     apiKeyAuth:
       type: apiKey
