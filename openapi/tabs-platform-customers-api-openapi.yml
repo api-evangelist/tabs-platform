@@ -170,28 +170,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid API key.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    ExternalId:
-      type: object
-      properties:
-        system:
-          type: string
-          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
-        value:
-          type: string
     Contact:
       type: object
       properties:
@@ -204,24 +183,21 @@ components:
           format: email
         role:
           type: string
-    Customer:
+    Error:
       type: object
       properties:
-        id:
+        error:
           type: string
-        name:
+        message:
           type: string
-        autoCharge:
-          type: boolean
-        creditCardFeesEnabled:
-          type: boolean
-        customFields:
-          type: object
-          additionalProperties: true
-        externalIds:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExternalId'
+    ExternalId:
+      type: object
+      properties:
+        system:
+          type: string
+          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
+        value:
+          type: string
     InvoiceLineItem:
       type: object
       properties:
@@ -263,13 +239,37 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvoiceLineItem'
-    Error:
+    Customer:
       type: object
       properties:
-        error:
+        id:
           type: string
-        message:
+        name:
           type: string
+        autoCharge:
+          type: boolean
+        creditCardFeesEnabled:
+          type: boolean
+        customFields:
+          type: object
+          additionalProperties: true
+        externalIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalId'
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   parameters:
     CustomerId:
       name: customerId

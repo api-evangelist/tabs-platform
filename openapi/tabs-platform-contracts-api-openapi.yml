@@ -163,39 +163,14 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid API key.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    Contract:
+    Error:
       type: object
       properties:
-        id:
+        error:
           type: string
-        customerId:
+        message:
           type: string
-        startDate:
-          type: string
-          format: date
-        endDate:
-          type: string
-          format: date
-        status:
-          type: string
-        obligations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Obligation'
     Obligation:
       type: object
       description: A commitment linked to a GL item that generates invoice line items.
@@ -216,13 +191,38 @@ components:
         endDate:
           type: string
           format: date
-    Error:
+    Contract:
       type: object
       properties:
-        error:
+        id:
           type: string
-        message:
+        customerId:
           type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+        obligations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Obligation'
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   parameters:
     ContractId:
       name: contractId
