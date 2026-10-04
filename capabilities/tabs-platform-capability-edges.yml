@@ -1,0 +1,63 @@
+slug: tabs-platform
+provider: Tabs
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 5
+edges:
+- tag: Revenue Recognition
+  spec_file: tabs-platform-revenue-recognition-api-openapi.yml
+  capability_id: BC-4250.50
+  capability_id_l1: BC-4250
+  capability_name: Subscription Revenue Recognition
+  confidence: 0.92
+  evidence: PUT /performance-obligations/{performanceObligationId}/recognized-revenue upsertRecognizedRevenue
+    Upsert recognized revenue for a performance obligation
+  reason: Performance obligations and recognized revenue schedules under ASC 606 are precisely Subscription
+    Revenue Recognition; ARR report is a secondary analytics surface.
+- tag: Usage Events
+  spec_file: tabs-platform-usage-events-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.88
+  evidence: POST /usage-events createUsageEvent Create a usage event; GET /usage-events listUsageEvents
+  reason: Ingestion and listing of usage events feeding billing is Usage Metering.
+- tag: Invoices
+  spec_file: tabs-platform-invoices-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.85
+  evidence: GET /invoices listInvoices List invoices; GET /invoices/{invoiceId}/pdf downloadInvoicePdf
+    Download an invoice PDF; PUT /invoices/{invoiceId} updateInvoice
+  reason: Operations generate/retrieve/adjust and deliver invoices for customers on a contract-driven
+    billing platform, matching Invoicing & Statement Management within subscription billing.
+- tag: Payments
+  spec_file: tabs-platform-payments-api-openapi.yml
+  capability_id: BC-4250.40
+  capability_id_l1: BC-4250
+  capability_name: Payment Collection & Dunning
+  confidence: 0.78
+  evidence: POST /payments createPayment Create a payment; GET /payments listPayments
+  reason: Recording and retrieving customer payments against invoices on a billing/collections platform
+    realises Payment Collection within subscription billing; dunning specifics are not shown but collection
+    is the stated vendor function.
+- tag: Customers
+  spec_file: tabs-platform-customers-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: listCustomers / createCustomer / updateCustomer / "List customer contacts"; schemas Customer,
+    Contact, ExternalId
+  reason: Full CRUD over customer records and contacts with external-id mapping is customer master data
+    management; the invoice listing is a related read rather than the core of the tag.
