@@ -120,6 +120,20 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    PerformanceObligation:
+      type: object
+      description: An ASC 606 performance obligation used to schedule revenue recognition.
+      properties:
+        id:
+          type: string
+        contractId:
+          type: string
+        obligationId:
+          type: string
+        recognitionMethod:
+          type: string
+        totalAmount:
+          type: number
     Error:
       type: object
       properties:
@@ -138,20 +152,6 @@ components:
           type: number
         currency:
           type: string
-    PerformanceObligation:
-      type: object
-      description: An ASC 606 performance obligation used to schedule revenue recognition.
-      properties:
-        id:
-          type: string
-        contractId:
-          type: string
-        obligationId:
-          type: string
-        recognitionMethod:
-          type: string
-        totalAmount:
-          type: number
   responses:
     Unauthorized:
       description: Missing or invalid API key.

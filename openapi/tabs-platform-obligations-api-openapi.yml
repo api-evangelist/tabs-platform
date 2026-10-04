@@ -80,6 +80,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
     Obligation:
       type: object
       description: A commitment linked to a GL item that generates invoice line items.
@@ -100,20 +107,6 @@ components:
         endDate:
           type: string
           format: date
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-  parameters:
-    ContractId:
-      name: contractId
-      in: path
-      required: true
-      schema:
-        type: string
   responses:
     Unauthorized:
       description: Missing or invalid API key.
@@ -121,6 +114,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  parameters:
+    ContractId:
+      name: contractId
+      in: path
+      required: true
+      schema:
+        type: string
   securitySchemes:
     apiKeyAuth:
       type: apiKey

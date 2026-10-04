@@ -183,36 +183,6 @@ components:
           format: email
         role:
           type: string
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-    ExternalId:
-      type: object
-      properties:
-        system:
-          type: string
-          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
-        value:
-          type: string
-    InvoiceLineItem:
-      type: object
-      properties:
-        id:
-          type: string
-        obligationId:
-          type: string
-        description:
-          type: string
-        quantity:
-          type: number
-        amount:
-          type: number
-        salesTax:
-          type: number
     Invoice:
       type: object
       properties:
@@ -239,6 +209,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvoiceLineItem'
+    InvoiceLineItem:
+      type: object
+      properties:
+        id:
+          type: string
+        obligationId:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+        amount:
+          type: number
+        salesTax:
+          type: number
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
     Customer:
       type: object
       properties:
@@ -257,6 +249,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ExternalId'
+    ExternalId:
+      type: object
+      properties:
+        system:
+          type: string
+          description: The external system, e.g. NetSuite, Salesforce, QuickBooks.
+        value:
+          type: string
+  parameters:
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
   responses:
     Unauthorized:
       description: Missing or invalid API key.
@@ -270,13 +277,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-  parameters:
-    CustomerId:
-      name: customerId
-      in: path
-      required: true
-      schema:
-        type: string
   securitySchemes:
     apiKeyAuth:
       type: apiKey

@@ -59,6 +59,20 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
     Item:
       type: object
       properties:
@@ -69,20 +83,6 @@ components:
         glCode:
           type: string
         categoryId:
-          type: string
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-    Category:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
           type: string
   responses:
     Unauthorized:
